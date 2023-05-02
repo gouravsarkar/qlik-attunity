@@ -1,0 +1,25 @@
+# Set the path to the AEMCTL.exe utility
+$aemctl_path = "C:\Program Files\Attunity\Replicate\bin\AEMCTL.exe"
+
+# Define the task name to monitor
+$task_name = "My Replication Task"
+
+# Loop until the task has completed or an error has occurred
+$status = $null
+do {
+    # Get the status of the task
+    $aemctl_output = & $aemctl_path status $task_name
+    $status = $aemctl_output | Where-Object { $_ -like "Task Status:*" } | ForEach-Object { $_ -replace "Task Status:", "" } | Select-Object -First 1
+
+    # Display the current status of the task
+    Write-Host "Task '$task_name' status: $status"
+
+    # Wait for a few seconds before checking the status again
+    Start-Sleep -Seconds 5
+} while ($status -ne "COMPLETED" -and $status -ne "ERROR")
+
+if ($status -eq "COMPLETED") {
+    Write-Host "Task '$task_name' completed successfully."
+} else {
+    Write-Host "Error: Task '$task_name' failed with status '$status'."
+}
