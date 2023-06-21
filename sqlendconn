@@ -1,0 +1,46 @@
+import requests
+import json
+
+def create_sql_server_endpoint(replicate_url, endpoint_name, server_name, database_name, username, password):
+    # Prepare the endpoint data
+    endpoint_data = {
+        "name": endpoint_name,
+        "type": "sqlserver",
+        "configuration": {
+            "serverName": server_name,
+            "databaseName": database_name,
+            "username": username,
+            "password": password
+        }
+    }
+
+    # Convert the endpoint data to JSON
+    json_data = json.dumps(endpoint_data)
+
+    # Set the REST API endpoint URL
+    url = f"{replicate_url}/endpoints"
+
+    try:
+        # Send the POST request to create the endpoint
+        response = requests.post(url, data=json_data)
+
+        # Check if the request was successful
+        if response.status_code == 201:
+            print("SQL Server endpoint created successfully.")
+        else:
+            print("Failed to create SQL Server endpoint. Status code:", response.status_code)
+            print("Response content:", response.content.decode())
+
+    except requests.exceptions.RequestException as e:
+        print("An error occurred while making the request:", e)
+
+# Set the Qlik Replicate URL and endpoint details
+replicate_url = "http://your-replicate-server:8080"
+endpoint_name = "MySQLServerEndpoint"
+server_name = "localhost"
+database_name = "mydatabase"
+username = "myusername"
+password = "mypassword"
+
+# Call the function to create the SQL Server endpoint
+create_sql_server_endpoint(replicate_url, endpoint_name, server_name, database_name, username, password)
